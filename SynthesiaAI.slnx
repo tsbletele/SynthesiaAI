@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Synthesia.Api/Synthesia.Api.csproj" />
+  <Project Path="Synthesia.Audio/Synthesia.Audio.csproj" />
+  <Project Path="Synthesia.Core/Synthesia.Core.csproj" />
+  <Project Path="Synthesia.Web/Synthesia.Web.csproj" />
+</Solution>
