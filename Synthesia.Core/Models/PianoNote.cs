@@ -2,18 +2,59 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Synthesia.Core.Models;
-
-public class PianoNote
+namespace Synthesia.Core.Models
 {
-    public string Name { get; }
-    public double Frequency { get; }
-
-    public PianoNote(string name, double frequency)
+    public class PianoNote
     {
-        Name = name;
-        Frequency = frequency;
-    }
+        public string Name { get; }
+        public int MidiNumber { get; }
+        public double Frequency { get; }
 
-    public override string ToString() => Name;
+        public PianoNote(string name, int midiNumber, double frequency)
+        {
+            Name = name;
+            MidiNumber = midiNumber;
+            Frequency = frequency;
+        }
+
+        // 🎵 Core music logic lives HERE
+        public static PianoNote? FromFrequency(double frequency)
+        {
+            if (frequency <= 0)
+                return null;
+
+            // MIDI formula (music standard)
+            int midi = (int)Math.Round(
+                69 + 12 * Math.Log2(frequency / 440.0)
+            );
+
+            // Piano range guard (A0 = 21, C8 = 108)
+            if (midi < 21 || midi > 108)
+                return null;
+
+            string noteName = MidiToNoteName(midi);
+            double exactFrequency = MidiToFrequency(midi);
+
+            return new PianoNote(noteName, midi, exactFrequency);
+        }
+
+        private static string MidiToNoteName(int midi)
+        {
+            string[] notes =
+            {
+                "C", "C#", "D", "D#", "E",
+                "F", "F#", "G", "G#", "A", "A#", "B"
+            };
+
+            int octave = (midi / 12) - 1;
+            string note = notes[midi % 12];
+
+            return $"{note}{octave}";
+        }
+
+        private static double MidiToFrequency(int midi)
+        {
+            return 440.0 * Math.Pow(2, (midi - 69) / 12.0);
+        }
+    }
 }
