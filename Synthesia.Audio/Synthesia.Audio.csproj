@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ProFL.NSoundEngine" Version="1.0.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Synthesia.Core\Synthesia.Core.csproj" />
   </ItemGroup>
 

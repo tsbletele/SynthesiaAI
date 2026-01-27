@@ -5,8 +5,12 @@ using Synthesia.Core.Models;
 
 namespace Synthesia.Audio.Interfaces;
 
-public sealed record AudioExtractionResult(
-    IReadOnlyList<NoteEvent> Notes,
-    double DurationSeconds,
-    string SourceFile
-);
+public class AudioExtractionResult
+{
+    public IReadOnlyList<NoteEvent> Notes { get; }
+
+    public AudioExtractionResult(List<NoteEvent> notes)
+    {
+        Notes = notes;
+    }
+}

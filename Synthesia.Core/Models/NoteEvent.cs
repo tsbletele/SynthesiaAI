@@ -6,12 +6,11 @@ namespace Synthesia.Core.Models
 {
     public sealed record NoteEvent
         (
-        PianoNote Note,
+            PianoNote Note,
             double StartTimeSeconds,
-            double EndTimeSeconds,
-            TimeSpan Duration
+            double EndTimeSeconds
         )
     {
-       public double DuratioSeconds => EndTimeSeconds - StartTimeSeconds;
+       public double DurationSeconds => EndTimeSeconds - StartTimeSeconds;
     }
 }
