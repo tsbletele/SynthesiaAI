@@ -1,23 +1,18 @@
-var builder = WebApplication.CreateBuilder(args);
+﻿using Synthesia.Audio.Processing;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var frames = new List<(double, double)>
 {
-    app.MapOpenApi();
+    (0.00, 261.63),
+    (0.05, 262.00),
+    (0.10, 261.80),
+    (0.40, 293.66),
+    (0.80, 329.63),
+};
+
+var segmenter = new NoteSegmenter();
+var notes = segmenter.Segment(frames);
+
+foreach (var n in notes)
+{
+    Console.WriteLine($"{n.Note.Name} {n.StartTimeSeconds:F2}s → {n.EndTimeSeconds:F2}s");
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
