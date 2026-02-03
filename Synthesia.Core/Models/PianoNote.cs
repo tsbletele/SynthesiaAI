@@ -17,16 +17,17 @@ namespace Synthesia.Core.Models
             Frequency = frequency;
         }
 
-        // 🎵 Core music logic lives HERE
+        // 🎵 Stable frequency → note conversion
         public static PianoNote? FromFrequency(double frequency)
         {
             if (frequency <= 0)
                 return null;
 
-            // MIDI formula (music standard)
-            int midi = (int)Math.Round(
-                69 + 12 * Math.Log2(frequency / 440.0)
-            );
+            // 🔑 FLOOR + bias = stable pitch detection
+            double midiExact =
+                69 + 12 * Math.Log2(frequency / 440.0);
+
+            int midi = (int)Math.Floor(midiExact + 0.5);
 
             // Piano range guard (A0 = 21, C8 = 108)
             if (midi < 21 || midi > 108)

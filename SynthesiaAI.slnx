@@ -2,5 +2,6 @@
   <Project Path="Synthesia.Api/Synthesia.Api.csproj" />
   <Project Path="Synthesia.Audio/Synthesia.Audio.csproj" />
   <Project Path="Synthesia.Core/Synthesia.Core.csproj" />
+  <Project Path="Synthesia.TestApp/Synthesia.TestApp.csproj" Id="28e44bc8-9376-40cb-a142-49f8bba758fd" />
   <Project Path="Synthesia.Web/Synthesia.Web.csproj" />
 </Solution>
