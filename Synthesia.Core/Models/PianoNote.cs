@@ -10,7 +10,7 @@ namespace Synthesia.Core.Models
         public int MidiNumber { get; }
         public double Frequency { get; }
 
-        public PianoNote(string name, int midiNumber, double frequency)
+        private PianoNote(string name, int midiNumber, double frequency)
         {
             Name = name;
             MidiNumber = midiNumber;
