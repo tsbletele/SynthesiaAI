@@ -10,17 +10,20 @@ namespace Synthesia.Audio.Utilities;
 
 public static class NoteFrequencyMap
 {
-    public static readonly List<PianoNote> Notes =
-    [
-        new PianoNote("C3", 48, 130.81),
-        new PianoNote("D3", 50, 146.83),
-        new PianoNote("E3", 52, 164.81),
-        new PianoNote("F3", 53, 174.61),
-        new PianoNote("G3", 55, 196.00),
-        new PianoNote("A3", 57, 220.00),
-        new PianoNote("B3", 59, 246.94),
-        new PianoNote("C4", 60, 261.63)
-    ];
+    public static readonly IReadOnlyList<PianoNote> Notes =
+        BuildPianoRange();
+
+    private static List<PianoNote> BuildPianoRange()
+    {
+        var notes = new List<PianoNote>();
+
+        for (int midi = 21; midi <= 108; midi++)
+        {
+            notes.Add(PianoNote.FromMidi(midi));
+        }
+
+        return notes;
+    }
 
     public static PianoNote FindClosestNote(double frequency)
     {

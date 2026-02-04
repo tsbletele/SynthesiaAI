@@ -39,6 +39,21 @@ namespace Synthesia.Core.Models
             return new PianoNote(noteName, midi, exactFrequency);
         }
 
+        public static PianoNote? FromMidi(int extractedMidi)
+        {
+            // Piano keyboard range: A0 (21) → C8 (108)
+            if (extractedMidi < 21 || extractedMidi > 108)
+                throw new ArgumentOutOfRangeException(
+                    nameof(extractedMidi),
+                    "MIDI note must be between 21 (A0) and 108 (C8)"
+                );
+
+            string noteName = MidiToNoteName(extractedMidi);
+            double exactFrequency = MidiToFrequency(extractedMidi);
+
+            return new PianoNote(noteName, extractedMidi, exactFrequency);
+        }
+
         private static string MidiToNoteName(int midi)
         {
             string[] notes =
