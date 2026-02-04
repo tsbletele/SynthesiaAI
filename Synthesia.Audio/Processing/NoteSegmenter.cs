@@ -1,61 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Synthesia.Audio.Models;
 using Synthesia.Core.Models;
 
 namespace Synthesia.Audio.Processing
 {
-    public class NoteSegmenter
+    public sealed class NoteSegmenter
     {
-        private const double MinNoteDuration = 0.10; // seconds
-        private const int SameNoteTolerance = 1;     // MIDI steps
+        private const double MinNoteDuration = 0.08;
 
-        public List<NoteEvent> Segment(
-            List<(double TimeSeconds, double Frequency)> frames)
+        public List<NoteEvent> Segment(List<DetectedFrame> frames)
         {
-            var results = new List<NoteEvent>();
+            var notes = new List<NoteEvent>();
 
             PianoNote? currentNote = null;
-            double noteStartTime = 0;
+            double startTime = 0;
 
             foreach (var frame in frames)
             {
-                var detected = PianoNote.FromFrequency(frame.Frequency);
-
-                if (detected == null)
+                var note = PianoNote.FromFrequency(frame.Frequency);
+                if (note == null)
                     continue;
 
-                // First valid note
                 if (currentNote == null)
                 {
-                    currentNote = detected;
-                    noteStartTime = frame.TimeSeconds;
+                    currentNote = note;
+                    startTime = frame.TimeSeconds;
                     continue;
                 }
 
-                // Same note (with tolerance)
-                if (Math.Abs(detected.MidiNumber - currentNote.MidiNumber) <= SameNoteTolerance)
+                // ⚠ Compare MIDI, not string names
+                if (note.MidiNumber != currentNote.MidiNumber)
                 {
-                    continue;
+                    double duration = frame.TimeSeconds - startTime;
+
+                    if (duration >= MinNoteDuration)
+                    {
+                        notes.Add(new NoteEvent(
+                            currentNote,
+                            startTime,
+                            frame.TimeSeconds
+                        ));
+                    }
+
+                    currentNote = note;
+                    startTime = frame.TimeSeconds;
                 }
-
-                // Note change → close previous note
-                double duration = frame.TimeSeconds - noteStartTime;
-
-                if (duration >= MinNoteDuration)
-                {
-                    results.Add(new NoteEvent(
-                        currentNote,
-                        noteStartTime,
-                        frame.TimeSeconds
-                    ));
-                }
-
-                // Start new note
-                currentNote = detected;
-                noteStartTime = frame.TimeSeconds;
             }
 
-            return results;
+            return notes;
         }
     }
 }

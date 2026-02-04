@@ -39,7 +39,7 @@ namespace Synthesia.Core.Models
             return new PianoNote(noteName, midi, exactFrequency);
         }
 
-        public static PianoNote? FromMidi(int extractedMidi)
+        public static PianoNote FromMidi(int extractedMidi)
         {
             // Piano keyboard range: A0 (21) → C8 (108)
             if (extractedMidi < 21 || extractedMidi > 108)
