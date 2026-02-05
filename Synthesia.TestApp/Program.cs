@@ -1,9 +1,10 @@
 ﻿using Synthesia.Audio.Midi;
+using Synthesia.Audio.Models;
 using Synthesia.Audio.Processing;
 using Synthesia.Audio.Utilities;
 using Synthesia.Core.Models;
 
-Console.WriteLine("Testing MIDI export...");
+/*Console.WriteLine("Testing MIDI export...");
 
 var notes = new List<NoteEvent>
 {
@@ -63,6 +64,29 @@ foreach (var f in testFrequencies)
 {
     var note = NoteFrequencyMap.FindClosestNote(f);
     Console.WriteLine($"{f} Hz → {note.Name} (MIDI {note.MidiNumber})");
+}*/
+
+var frames = new List<DetectedFrame>
+{
+    new(0.0, 261.63), // C4
+    new(0.1, 261.63),
+    new(0.2, 261.63),
+
+    new(0.3, 293.66), // D4
+    new(0.4, 293.66),
+
+    new(0.5, 329.63), // E4
+    new(0.6, 329.63),
+};
+
+var segmenter = new NoteSegmenter();
+var notes = segmenter.Segment(frames);
+
+foreach (var note in notes)
+{
+    Console.WriteLine(
+        $"{note.Note.Name} | {note.StartTimeSeconds}s → {note.EndTimeSeconds}s"
+    );
 }
 
 
