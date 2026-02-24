@@ -3,54 +3,50 @@ using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using coreNoteEvent = Synthesia.Core.Models.NoteEvent;
 
-namespace Synthesia.Audio.Midi
+namespace Synthesia.Audio.Export;
+
+public sealed class MidiExporter
 {
-    public class MidiExporter
+    private const int TicksPerQuarterNote = 480;
+    private const int TempoBpm = 120;
+
+    public void Export(List<coreNoteEvent> notes, string filePath)
     {
-        public MidiFile Export(
-            List<coreNoteEvent> notes,
-            int tempoBpm = 120)
-        {
-            var trackChunk = new TrackChunk();
-            var tempoMap = TempoMap.Default;
+        var tempoMap = TempoMap.Create(
+            Tempo.FromBeatsPerMinute(TempoBpm));
 
-            using (var notesManager = trackChunk.ManageNotes())
+        var trackChunk = new TrackChunk();
+        var midiFile = new MidiFile(trackChunk)
+        {
+            TimeDivision = new TicksPerQuarterNoteTimeDivision(
+                TicksPerQuarterNote)
+        };
+
+        var manager = trackChunk.ManageNotes();
+
+        foreach (var note in notes)
+        {
+            long startTicks = SecondsToTicks(note.StartTimeSeconds);
+            long lengthTicks = SecondsToTicks(
+                note.EndTimeSeconds - note.StartTimeSeconds);
+
+            var midiNote = new Melanchall.DryWetMidi.Interaction.Note(
+                (SevenBitNumber)note.Note.MidiNumber,
+                lengthTicks)
             {
-                foreach (var noteEvent in notes)
-                {
-                    // 🔒 HARD STABILIZATION STEP
-                    int midi = noteEvent.Note.MidiNumber;
+                Time = startTicks
+            };
 
-                    // Guard AGAIN (export-level safety)
-                    if (midi < 21 || midi > 108)
-                        continue;
-
-                    var length = TimeConverter.ConvertFrom(
-                        MusicalTimeSpan.FromDouble(noteEvent.DurationSeconds),
-                        tempoMap);
-
-                    var startTime = TimeConverter.ConvertFrom(
-                        MusicalTimeSpan.FromDouble(noteEvent.StartTimeSeconds),
-                        tempoMap);
-
-                    var midiNote = new Melanchall.DryWetMidi.Interaction.Note(
-                        (SevenBitNumber)midi,
-                        length)
-                    {
-                        Time = startTime,
-                        Velocity = (SevenBitNumber)80 // fixed velocity for now
-                    };
-
-                    notesManager.Objects.Add(midiNote);
-                }
-            }
-
-            return new MidiFile(trackChunk);
+            manager.Objects.Add(midiNote);
         }
 
-        public void SaveToFile(MidiFile midiFile, string path)
-        {
-            midiFile.Write(path);
-        }
+        midiFile.Write(filePath);
+    }
+
+    private static long SecondsToTicks(double seconds)
+    {
+        return (long)(
+            seconds * TempoBpm * TicksPerQuarterNote / 60.0
+        );
     }
 }
