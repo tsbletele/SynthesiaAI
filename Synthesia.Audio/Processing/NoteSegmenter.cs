@@ -46,6 +46,22 @@ namespace Synthesia.Audio.Processing
                 }
             }
 
+            //  CRITICAL: close the final note
+            if (currentNote != null && frames.Count > 0)
+            {
+                double endTime = frames[^1].TimeSeconds;
+                double duration = endTime - startTime;
+
+                if (duration >= MinNoteDuration)
+                {
+                    notes.Add(new NoteEvent(
+                        currentNote,
+                        startTime,
+                        endTime
+                    ));
+                }
+            }
+
             return notes;
         }
     }
